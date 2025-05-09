@@ -1,0 +1,91 @@
+HƯỚNG DẪN CHI TIẾT DỰ ÁN TEXT DETECTION
+
+1. TỔNG QUAN DỰ ÁN
+------------------
+Dự án Text Detection là một ứng dụng web được xây dựng bằng Django, cho phép:
+- Nhận dạng văn bản từ hình ảnh sử dụng EasyOCR
+- Dịch văn bản giữa tiếng Việt và tiếng Anh
+- Lưu trữ kết quả nhận dạng và dịch thuật
+- Hiển thị kết quả với giao diện web thân thiện
+
+2. YÊU CẦU HỆ THỐNG
+------------------
+- Python 3.8 trở lên
+- MySQL Database
+- Các thư viện Python (được liệt kê trong requirements.txt):
+  + Django 4.2.0
+  + mysqlclient 2.1.1
+  + opencv-python 4.7.0.72
+  + easyocr 1.7.0
+  + numpy 1.24.3
+  + Pillow 9.5.0
+  + requests 2.31.0
+  + beautifulsoup4 4.12.2
+  + selenium 4.9.1
+  + deep-translator 1.11.4
+  + pandas 2.0.2
+  + openpyxl 3.1.2
+
+3. CÀI ĐẶT
+----------
+a) Tạo môi trường ảo Python:
+   python -m venv venv
+   
+b) Kích hoạt môi trường ảo:
+   - Windows: venv\Scripts\activate
+   - Linux/Mac: source venv/bin/activate
+
+c) Cài đặt các thư viện:
+   pip install -r requirements.txt
+
+d) Cấu hình cơ sở dữ liệu:
+   - Tạo database MySQL
+   - Cập nhật thông tin kết nối trong settings.py
+
+e) Chạy migrations:
+   python manage.py makemigrations
+   python manage.py migrate
+
+4. CHẠY DỰ ÁN
+------------
+a) Khởi động server:
+   python manage.py runserver
+
+b) Truy cập ứng dụng:
+   - Mở trình duyệt web
+   - Truy cập địa chỉ: http://localhost:8000
+
+5. CHỨC NĂNG CHÍNH
+-----------------
+- Upload hình ảnh để nhận dạng văn bản
+- Xem kết quả nhận dạng với độ tin cậy
+- Dịch văn bản giữa tiếng Việt và tiếng Anh
+- Lưu trữ lịch sử nhận dạng và dịch thuật
+- Xuất kết quả ra file Excel
+
+6. CẤU TRÚC DỰ ÁN
+----------------
+- text_detection_project/: Thư mục gốc dự án
+  + manage.py: File quản lý Django
+  + requirements.txt: Danh sách thư viện
+  + text_detection/: Ứng dụng chính
+    * models.py: Định nghĩa cấu trúc dữ liệu
+    * views.py: Xử lý logic nghiệp vụ
+    * urls.py: Định nghĩa đường dẫn
+    * templates/: Chứa giao diện HTML
+    * migrations/: Quản lý thay đổi database
+
+7. LƯU Ý
+--------
+- Đảm bảo đã cài đặt đầy đủ các thư viện
+- Kiểm tra kết nối database trước khi chạy
+- Có thể cần cài đặt thêm các driver cho OpenCV và EasyOCR
+- Nên sử dụng Python phiên bản 3.8 trở lên để tránh các vấn đề tương thích
+
+8. HỖ TRỢ
+---------
+Nếu gặp vấn đề trong quá trình cài đặt hoặc sử dụng, vui lòng:
+- Kiểm tra log lỗi trong console
+- Xác nhận các thư viện đã được cài đặt đúng phiên bản
+- Kiểm tra kết nối database
+- Đảm bảo các biến môi trường được cấu hình đúng 

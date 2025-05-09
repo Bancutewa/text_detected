@@ -1,0 +1,229 @@
+{% extends 'text_detection/base.html' %}
+
+{% block title %}Trang chủ - Text Detection{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0"><i class="fas fa-camera"></i> Nhận dạng văn bản từ hình ảnh</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">Chọn phương thức nhập:</label>
+                            <select name="input_type" class="form-select" id="inputType">
+                                <option value="url">URL</option>
+                                <option value="upload">Tải lên</option>
+                                <option value="paste">Dán ảnh</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="urlInput">
+                            <label class="form-label">URL hình ảnh:</label>
+                            <input type="url" name="url" class="form-control" placeholder="Nhập URL hình ảnh">
+                        </div>
+
+                        <div class="mb-3" id="fileInput" style="display: none;">
+                            <label class="form-label">Tải lên hình ảnh:</label>
+                            <input type="file" name="image_file" class="form-control" accept="image/*">
+                        </div>
+
+                        <div class="mb-3" id="pasteInput" style="display: none;">
+                            <label class="form-label">Dán hình ảnh:</label>
+                            <div class="border p-3 rounded" id="pasteArea" style="min-height: 200px; background-color: #f8f9fa;">
+                                <div class="text-center text-muted">
+                                    <i class="fas fa-paste mb-2"></i>
+                                    <p class="mb-0">Dán hình ảnh vào đây (Ctrl+V)</p>
+                                </div>
+                            </div>
+                            <input type="hidden" name="paste_image" id="pasteImage">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Hướng dịch:</label>
+                            <select name="translate_direction" class="form-select">
+                                <option value="vi_to_en">Tiếng Việt sang Tiếng Anh</option>
+                                <option value="en_to_vi">Tiếng Anh sang Tiếng Việt</option>
+                            </select>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Xử lý
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if images %}
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-check-circle"></i> Kết quả</h4>
+                </div>
+                <div class="card-body">
+                    <div class="results">
+                        {% for image in images %}
+                        <img src="data:image/png;base64,{{ image }}" class="img-fluid detection-image mb-4">
+                        {% endfor %}
+
+                        {% if table_data %}
+                        <div class="translation-table">
+                            <h5 class="mb-3">Văn bản đã nhận dạng</h5>
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Văn bản gốc</th>
+                                            <th>Bản dịch</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in table_data %}
+                                        <tr>
+                                            <td>{{ row.stt }}</td>
+                                            <td>{{ row.original }}</td>
+                                            <td>{{ row.translated }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                            <a href="{% url 'download_excel' %}" class="btn btn-success mt-3">
+                                <i class="fas fa-file-excel"></i> Tải xuống Excel
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if recent_detections %}
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0"><i class="fas fa-history"></i> Kết quả nhận dạng gần đây</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for detection in recent_detections %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Kết quả #{{ forloop.counter }}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <img src="{{ detection.image.url }}" alt="Detected Image" class="img-fluid detection-image">
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Văn bản nhận dạng:</h6>
+                                        <p class="mb-0">{{ detection.detected_text }}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Thời gian:</h6>
+                                        <p class="mb-0">{{ detection.created_at|date:"d/m/Y H:i" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if recent_translations %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-language"></i> Bản dịch gần đây</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for translation in recent_translations %}
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100">
+                                <div class="card-header">
+                                    <h5 class="mb-0">Bản dịch #{{ forloop.counter }}</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <h6>Văn bản gốc:</h6>
+                                        <p class="mb-0">{{ translation.original_text }}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Bản dịch:</h6>
+                                        <p class="mb-0">{{ translation.translated_text }}</p>
+                                    </div>
+                                    <div class="mb-3">
+                                        <h6>Thời gian:</h6>
+                                        <p class="mb-0">{{ translation.created_at|date:"d/m/Y H:i" }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('inputType').addEventListener('change', function() {
+        const urlInput = document.getElementById('urlInput');
+        const fileInput = document.getElementById('fileInput');
+        const pasteInput = document.getElementById('pasteInput');
+
+        urlInput.style.display = 'none';
+        fileInput.style.display = 'none';
+        pasteInput.style.display = 'none';
+
+        if (this.value === 'url') {
+            urlInput.style.display = 'block';
+        } else if (this.value === 'upload') {
+            fileInput.style.display = 'block';
+        } else if (this.value === 'paste') {
+            pasteInput.style.display = 'block';
+        }
+    });
+
+    const pasteArea = document.getElementById('pasteArea');
+    const pasteImage = document.getElementById('pasteImage');
+
+    pasteArea.addEventListener('paste', function(e) {
+        const items = e.clipboardData.items;
+        for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') !== -1) {
+                const file = items[i].getAsFile();
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    pasteImage.value = e.target.result;
+                    pasteArea.innerHTML = '<img src="' + e.target.result + '" style="max-width: 100%;">';
+                };
+                reader.readAsDataURL(file);
+                break;
+            }
+        }
+    });
+</script>
+{% endblock %} 

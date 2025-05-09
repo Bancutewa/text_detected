@@ -1,0 +1,89 @@
+{% extends 'text_detection/base.html' %}
+
+{% block title %}Lịch sử nhận dạng - Text Detection{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Lịch sử nhận dạng</h2>
+                
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="detections-tab" data-bs-toggle="tab" data-bs-target="#detections" type="button" role="tab">
+                            Nhận dạng văn bản
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="translations-tab" data-bs-toggle="tab" data-bs-target="#translations" type="button" role="tab">
+                            Dịch văn bản
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content mt-3" id="myTabContent">
+                    <div class="tab-pane fade show active" id="detections" role="tabpanel">
+                        {% if detections %}
+                            {% for detection in detections %}
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                {% if detection.image_path %}
+                                                    <img src="{{ MEDIA_URL }}{{ detection.image_path }}" alt="Detected image" class="img-fluid">
+                                                {% else %}
+                                                    <span class="text-muted">Không có ảnh</span>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-8">
+                                                <h5 class="card-title">Văn bản gốc</h5>
+                                                <p class="card-text">{{ detection.original_text }}</p>
+                                                {% if detection.translated_text %}
+                                                    <h5 class="card-title">Bản dịch</h5>
+                                                    <p class="card-text">{{ detection.translated_text }}</p>
+                                                {% endif %}
+                                                <p class="card-text">
+                                                    <small class="text-muted">
+                                                        Độ tin cậy: {{ detection.confidence_score|floatformat:2 }}%<br>
+                                                        Thời gian: {{ detection.created_at|date:"d/m/Y H:i" }}
+                                                    </small>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-center">Chưa có lịch sử nhận dạng nào.</p>
+                        {% endif %}
+                    </div>
+
+                    <div class="tab-pane fade" id="translations" role="tabpanel">
+                        {% if translations %}
+                            {% for translation in translations %}
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Văn bản gốc</h5>
+                                        <p class="card-text">{{ translation.original_paragraph }}</p>
+                                        <h5 class="card-title">Bản dịch</h5>
+                                        <p class="card-text">{{ translation.translated_paragraph }}</p>
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                Hướng dịch: {{ translation.get_translation_direction_display }}<br>
+                                                Thời gian: {{ translation.created_at|date:"d/m/Y H:i" }}
+                                            </small>
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="text-center">Chưa có lịch sử dịch nào.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
