@@ -3,56 +3,66 @@
 {% block title %}Thông tin cá nhân - Text Detection{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-body">
-                <h2 class="card-title mb-4">Thông tin cá nhân</h2>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-6">
-                            <h4>Thông tin tài khoản</h4>
-                            {% for field in user_form %}
-                                <div class="mb-3">
-                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                                    {{ field.errors }}
-                                    {{ field }}
-                                </div>
-                            {% endfor %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-7">
+            <div class="card shadow-lg border-0 rounded-lg mb-4">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(45deg, #2196F3, #1976D2); border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                    <h3 class="mb-0">Thông tin cá nhân</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" autocomplete="off">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5 class="fw-bold mb-3">Thông tin tài khoản</h5>
+                                {% for field in user_form %}
+                                    <div class="mb-3">
+                                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                                        {{ field.errors }}
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <h5 class="fw-bold mb-3">Thông tin bổ sung</h5>
+                                {% for field in profile_form %}
+                                    <div class="mb-3">
+                                        <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                                        {{ field.errors }}
+                                        {{ field }}
+                                        {% if field.help_text %}
+                                            <small class="form-text text-muted">{{ field.help_text }}</small>
+                                        {% endif %}
+                                    </div>
+                                {% endfor %}
+                            </div>
                         </div>
-                        <div class="col-md-6">
-                            <h4>Thông tin bổ sung</h4>
-                            {% for field in profile_form %}
-                                <div class="mb-3">
-                                    <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                                    {{ field.errors }}
-                                    {{ field }}
-                                </div>
-                            {% endfor %}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>Cập nhật thông tin
+                            </button>
                         </div>
-                    </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body">
-                <h3 class="card-title">Thống kê</h3>
-                <div class="list-group">
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Số lần nhận dạng</h5>
+        <div class="col-md-4 col-lg-3">
+            <div class="card shadow border-0 rounded-lg">
+                <div class="card-header text-white text-center py-3" style="background: linear-gradient(45deg, #2196F3, #1976D2); border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                    <h4 class="mb-0">Thống kê</h4>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        <div class="list-group-item d-flex justify-content-between align-items-center border-0">
+                            <span class="fw-semibold">Số lần nhận dạng</span>
                             <span class="badge bg-primary rounded-pill">{{ detections_count }}</span>
                         </div>
-                    </div>
-                    <div class="list-group-item">
-                        <div class="d-flex w-100 justify-content-between">
-                            <h5 class="mb-1">Số lần dịch</h5>
+                        <div class="list-group-item d-flex justify-content-between align-items-center border-0">
+                            <span class="fw-semibold">Số lần dịch</span>
                             <span class="badge bg-primary rounded-pill">{{ translations_count }}</span>
                         </div>
                     </div>
@@ -61,4 +71,14 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('input, select, textarea').forEach(function(el) {
+    if (!el.classList.contains('form-control') && el.type !== 'hidden' && el.type !== 'checkbox') {
+        el.classList.add('form-control');
+    }
+});
+</script>
 {% endblock %} 

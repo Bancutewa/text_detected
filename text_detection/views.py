@@ -350,9 +350,14 @@ def profile(request):
         user_form = UserUpdateForm(instance=request.user)
         profile_form = UserProfileForm(instance=request.user.userprofile)
     
+    detections_count = DetectionResult.objects.filter(user=request.user).count()
+    translations_count = CombinedTranslation.objects.filter(user=request.user).count()
+
     context = {
         'user_form': user_form,
-        'profile_form': profile_form
+        'profile_form': profile_form,
+        'detections_count': detections_count,
+        'translations_count': translations_count,
     }
     return render(request, 'text_detection/profile.html', context)
 

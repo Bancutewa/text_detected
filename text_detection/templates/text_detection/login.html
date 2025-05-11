@@ -1,31 +1,56 @@
 {% extends 'text_detection/base.html' %}
+{% load widget_tweaks %}
 
 {% block title %}Đăng nhập - Text Detection{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h2 class="card-title text-center mb-4">Đăng nhập</h2>
-                <form method="post">
-                    {% csrf_token %}
-                    {% for field in form %}
-                        <div class="mb-3">
-                            <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
-                            {{ field.errors }}
-                            {{ field }}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header text-white text-center py-4" style="background: linear-gradient(45deg, #2196F3, #1976D2); border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                    <h3 class="mb-0">Đăng nhập</h3>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post" autocomplete="off">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-semibold">{{ field.label }}</label>
+                                {{ field.errors }}
+                                {{ field|add_class:'form-control' }}
+                                {% if field.help_text %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+                            </button>
                         </div>
-                    {% endfor %}
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                    </form>
+                </div>
+                <div class="card-footer text-center py-3 bg-light" style="border-bottom-left-radius: 10px; border-bottom-right-radius: 10px;">
+                    <div class="small">
+                        <p class="mb-0">Chưa có tài khoản? 
+                            <a href="{% url 'register' %}" class="text-primary fw-bold">Đăng ký ngay</a>
+                        </p>
                     </div>
-                </form>
-                <div class="text-center mt-3">
-                    <p>Chưa có tài khoản? <a href="{% url 'register' %}">Đăng ký</a></p>
                 </div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Tự động thêm class form-control cho các input nếu chưa có (phòng trường hợp add_class không hoạt động)
+document.querySelectorAll('input, select, textarea').forEach(function(el) {
+    if (!el.classList.contains('form-control') && el.type !== 'hidden' && el.type !== 'checkbox') {
+        el.classList.add('form-control');
+    }
+});
+</script>
 {% endblock %} 

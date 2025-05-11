@@ -4,6 +4,14 @@
 
 {% block content %}
 <div class="container">
+    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(255,255,255,0.7); z-index:9999; align-items:center; justify-content:center;">
+        <div class="text-center">
+            <div class="spinner-border text-primary" style="width: 4rem; height: 4rem;" role="status">
+                <span class="visually-hidden">Đang xử lý...</span>
+            </div>
+            <div class="mt-3 fw-bold text-primary">Đang xử lý, vui lòng chờ...</div>
+        </div>
+    </div>
     <div class="row mb-4">
         <div class="col-12">
             <div class="card">
@@ -34,11 +42,14 @@
 
                         <div class="mb-3" id="pasteInput" style="display: none;">
                             <label class="form-label">Dán hình ảnh:</label>
-                            <div class="border p-3 rounded" id="pasteArea" style="min-height: 200px; background-color: #f8f9fa;">
-                                <div class="text-center text-muted">
+                            <div class="border p-3 rounded position-relative" id="pasteArea" style="min-height: 200px; background-color: #f8f9fa;">
+                                <div class="text-center text-muted" id="pastePlaceholder">
                                     <i class="fas fa-paste mb-2"></i>
                                     <p class="mb-0">Dán hình ảnh vào đây (Ctrl+V)</p>
                                 </div>
+                                <button type="button" id="clearPasteImage" class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2" style="display:none; z-index:2;">
+                                    <i class="fas fa-times"></i>
+                                </button>
                             </div>
                             <input type="hidden" name="paste_image" id="pasteImage">
                         </div>
@@ -209,6 +220,8 @@
 
     const pasteArea = document.getElementById('pasteArea');
     const pasteImage = document.getElementById('pasteImage');
+    const clearPasteImage = document.getElementById('clearPasteImage');
+    const pastePlaceholder = document.getElementById('pastePlaceholder');
 
     pasteArea.addEventListener('paste', function(e) {
         const items = e.clipboardData.items;
@@ -219,11 +232,27 @@
                 reader.onload = function(e) {
                     pasteImage.value = e.target.result;
                     pasteArea.innerHTML = '<img src="' + e.target.result + '" style="max-width: 100%;">';
+                    clearPasteImage.style.display = 'block';
+                    pasteArea.appendChild(clearPasteImage);
                 };
                 reader.readAsDataURL(file);
                 break;
             }
         }
+    });
+
+    clearPasteImage.addEventListener('click', function() {
+        pasteImage.value = '';
+        pasteArea.innerHTML = '';
+        pasteArea.appendChild(pastePlaceholder);
+        clearPasteImage.style.display = 'none';
+    });
+
+    // Hiệu ứng loading khi submit form
+    document.querySelectorAll('form').forEach(function(form) {
+        form.addEventListener('submit', function() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        });
     });
 </script>
 {% endblock %} 
